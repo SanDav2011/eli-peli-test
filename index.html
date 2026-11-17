@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ели-Пели — корпоративы</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#f7f1e6;color:#173e33;font:17px system-ui}header,section,footer{padding:28px max(6vw,18px)}header,footer{background:#103c30;color:#fff}header{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}a{color:inherit}h1{font:clamp(40px,7vw,82px) Georgia;max-width:900px;margin:25px 0}h2{font:36px Georgia}.hero{background:radial-gradient(ellipse at right,#455a36,#103c30);color:#fff;padding-top:65px;padding-bottom:70px}.gold{color:#e8c97c}button,.button{display:inline-block;background:#e8c97c;border:0;border-radius:10px;padding:13px 20px;color:#183b30;cursor:pointer;font:inherit;text-decoration:none}input{font:inherit;padding:10px;width:100%;border:1px solid #ccd5cd;border-radius:8px}label{display:block;margin:9px 0}label input[type=radio]{width:auto}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.card{background:white;padding:20px;border-radius:16px;margin:10px 0}small{display:block;color:#68766c;margin:10px 0}.notice{background:#ffefc8;padding:14px;font-size:14px}#editor{border:2px dashed #ba963f;padding:20px}form{max-width:560px}textarea{width:100%;min-height:130px;font:inherit}nav a{margin-right:16px}</style>
+<body>
+<div class="notice">Демонстрационный макет. Заявки не отправляются. Изменения редактора сохраняются только в этом браузере.</div>
+<header><b>ЕЛИ · ПЕЛИ / СОРОЧИНСК</b><nav><a href="#menu">Меню</a><a href="#booking">Бронь</a><a href="#editor">Демо-редактор</a></nav></header>
+<section class="hero"><p class="gold">НОВОГОДНИЕ КОРПОРАТИВЫ</p><h1>Соберите близких.<br>Отпразднуйте красиво.</h1><p>Ресто-бар «Ели-Пели» · Сорочинск, Фурманова, 105</p><h2 class="gold">от 2 500 ₽ за человека</h2><p>Выберите блюда из каждой категории. Детали банкета согласуем лично.</p><a class="button" href="#booking">Обсудить корпоратив</a> <a class="button" href="tel:+79228077797">Позвонить</a></section>
+<section id="menu"><h2>Ваш праздничный стол</h2><p>По одной позиции из каждой категории. Условия подачи общих блюд уточняются при согласовании.</p><small>Неоднозначные названия в исходном списке отмечены для проверки. Цены отдельных блюд пока не заданы.</small><div id="list" class="grid"></div></section>
+<section id="booking"><h2>Обсудим ваш вечер</h2><p>+7 (922) 807-77-97 · ул. Фурманова, 105</p><form id="request"><label>Дата<input id="date" type="date" required></label><label>Гостей<input id="guests" type="number" min="1" value="10" required></label><button>Подготовить текст заявки</button></form><p id="estimate"></p><textarea id="summary" readonly aria-label="Текст заявки" placeholder="Здесь появится текст, который можно скопировать и передать администратору."></textarea><small>Это не подтверждение брони. Позвоните для согласования даты.</small></section>
+<section id="editor"><h2>Демо-редактор меню</h2><p>Без пароля и без сервера: только для согласования интерфейса. Не используйте для персональных данных.</p><label>Категория<select id="category"></select></label><div id="fields"></div><button id="save">Сохранить в браузере</button> <button id="reset">Сбросить демо</button><p id="status" role="status"></p></section>
+<footer>Ели-Пели · Сорочинск · <a href="tel:+79228077797">+7 (922) 807-77-97</a><p>Фотографии заведения и юридическая информация будут добавлены перед публикацией.</p></footer>
+<script>
+const key='eli-peli-demo-v1';
+const source=[
+['Индивидуальное горячее',['Свиные отбивные','Куриные отбивные','Карель в сливочном соусе — уточнить название','Кордон блю — уточнить название']],
+['Индивидуальные салаты',['Ударь куриц. — уточнить название','Царь Кревет. — уточнить название','Греческий','Оливье','Тёплый с телятиной — уточнить']],
+['Общие салаты',['Новогодний венок','Гранатовый браслет','Новый с языком','Хрустящий баклажан','Баварский']],
+['Общее горячее',['Сет «Мангал» — состав уточняется','Сет рёбер из трёх — состав уточняется']],
+['Закуски',['Сельдь','Соленья','Русская','Мясная','Сало ассорти','Сырная','Фруктовая','Овощная']]
+];
+let data;try{data=JSON.parse(localStorage.getItem(key))}catch(e){}
+if(!Array.isArray(data))data=source.map(([title,names])=>({title,items:names.map(name=>({name,price:'',weight:'',persons:''}))}));
+const $=id=>document.getElementById(id);
+function node(tag,text,parent){let n=document.createElement(tag);if(text)n.textContent=text;if(parent)parent.append(n);return n}
+function render(){ $('list').replaceChildren();data.forEach((c,i)=>{let box=node('div','',$('list'));box.className='card';node('h3',c.title,box);c.items.forEach((v,j)=>{let label=node('label','',box),input=node('input','',label);input.type='radio';input.name='cat'+i;input.value=j;label.append(document.createTextNode(' '+v.name));node('small',[v.price? v.price+' ₽':'Цена не указана',v.weight,v.persons? v.persons+' чел.':''].filter(Boolean).join(' · '),label)})})}
+data.forEach((c,i)=>{let o=node('option',c.title,$('category'));o.value=i});
+function edit(){let c=data[+$('category').value];$('fields').replaceChildren();c.items.forEach(v=>{let box=node('div','',$('fields'));box.className='card';[['name','Название'],['price','Цена, ₽ (необязательно)'],['weight','Вес (например, 250 г)'],['persons','Количество человек']].forEach(([k,title])=>{let l=node('label',title,box),input=node('input','',l);input.value=v[k];input.oninput=()=>v[k]=input.value})})}
+$('category').onchange=edit;
+$('save').onclick=()=>{try{localStorage.setItem(key,JSON.stringify(data));render();$('status').textContent='Сохранено только в этом браузере.'}catch(e){$('status').textContent='Браузер запретил сохранение.'}};
+$('reset').onclick=()=>{localStorage.removeItem(key);location.reload()};
+$('request').onsubmit=e=>{e.preventDefault();let count=+$('guests').value;let lines=['Ели-Пели: запрос на корпоратив','Дата: '+$('date').value,'Гостей: '+count];data.forEach((c,i)=>{let selected=document.querySelector('input[name=cat'+i+']:checked');lines.push(c.title+': '+(selected?c.items[+selected.value].name:'не выбрано'))});$('summary').value=lines.join('\n');$('estimate').textContent='Ориентир от '+(count*2500).toLocaleString('ru-RU')+' ₽. Итоговая стоимость согласуется с заведением.'};
+render();edit();
+</script>
+</body>
+</html>
